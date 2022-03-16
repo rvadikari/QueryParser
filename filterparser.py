@@ -87,27 +87,33 @@ class FilterParser:
             
             # print(next(d for i,d in enumerate(self.filterArray) if "filters" in d).keys())
             res_list:dict =next(d for i,d in enumerate(self.filterArray) if "filters" in d)
-            print(res_list)
+            
             for key in res_list.keys():
                 nestedFilter = next(d for i,d in enumerate(self.filterArray) if "filters" in d)[key]
-                print(nestedFilter)
+                
                 nestedFilterList: List[dict] = nestedFilter
-                if isinstance(nestedFilter, List[dict]):
-
-                    if nestedFilterList[-1]["filters"] == None:
-                        if not parentFilterOperator == "And":
-                            nestedFilterList.append({
-                                        {"operator", parentFilterOperator},
-                                        {"filters", self.GetListofFilters(
-                                            filterWithSingleParams, filterOperator)}})
-                        else:
-                            nestedFilterList.append({
-                                        {"filters", self.GetListofFilters(
-                                            filterWithSingleParams, filterOperator)}})
-                            continue
+                # if isinstance(nestedFilter, List[dict]):
+                
+                if not "filters" in nestedFilterList[-1]:
+                    
+                   
+                    if not parentFilterOperator == "And":
+                        nested_Dict=dict()
+                        nested_Dict["operator"]=parentFilterOperator
+                        nested_Dict["filters"]= self.GetListofFilters(
+                                        filterWithSingleParams, filterOperator)
+                                    
+                        
+                        nestedFilterList.append(nested_Dict)
+                    else:
+                        nested_Dict=dict()
+                        nested_Dict["filters"]= self.GetListofFilters(
+                        filterWithSingleParams, filterOperator)
+                        nestedFilterList.append(nested_Dict) 
+                        continue
 
                     self.GetNestedFilter(nestedFilterList, filterWithSingleParams,
-                                    filterOperator, parentFilterOperator)
+                                filterOperator, parentFilterOperator)
 
 
 
